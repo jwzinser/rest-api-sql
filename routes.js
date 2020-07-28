@@ -6,7 +6,9 @@ const router = express.Router();
 const db = require('./db');
 const {Course, User} = db.models;
 const auth = require('basic-auth');
-//auth middleware 
+
+
+//authenticate middleware 
 const authUser = (req, res, next) => {
     const credentials = auth(req);
     if(credentials){
@@ -36,6 +38,9 @@ const authUser = (req, res, next) => {
         res.status(401).json({ message: 'Access Denied' }).end();
     }
 }
+
+
+
 //Create user
 router.post('/users',[
     check('firstName')
@@ -150,7 +155,6 @@ router.get('/courses', (req, res, next) => {
             {
                 model: User,
                 attributes:[
-                    //only wanted attributes
                     "id", 
                     "firstName", 
                     "lastName",
