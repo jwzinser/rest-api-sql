@@ -8,7 +8,7 @@ const {Course, User} = db.models;
 const auth = require('basic-auth');
 
 
-//authenticate middleware 
+//authenticate middleware with email and password
 const authUser = (req, res, next) => {
     const credentials = auth(req);
     if(credentials){
@@ -27,7 +27,6 @@ const authUser = (req, res, next) => {
                     req.currentUser = user;
                     next();
                 }
-                //if false, throw access denied message back
                 if(!respond){ 
                     res.status(401).json({ message: 'Access Denied' }).end();
                 }
@@ -59,7 +58,7 @@ router.post('/users',[
 ],(req, res, next) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()){
-        // Use the Array `map()` method to get a list of error messages.
+        // get a list of error messages.
          const errorMessages = errors.array().map(error => error.msg);
 
         // Return the validation errors to the client.
@@ -75,7 +74,7 @@ router.post('/users',[
             }else if(req.body.password === ""){
                 res.status(400).json({errors: "password can't be empty string!"})
             }else{
-                // async way to hash the passwd
+                // hash the passwd
                 bcrypt.genSalt(5,(err, salt) => {
                     bcrypt.hash(req.body.password, salt, (err, hash) => {
                         User.create({
@@ -119,10 +118,9 @@ router.post('/courses', authUser, [
 ] ,(req, res, next) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()){
-        // Use the Array `map()` method to get a list of error messages.
+        // get a list of error messages.
          const errorMessages = errors.array().map(error => error.msg);
 
-        // Return the validation errors to the client.
         res.status(400).json({ errors: errorMessages });
     }else {
         const user = req.currentUser;
@@ -221,10 +219,8 @@ router.put('/courses/:id', authUser, [
 ], (req, res, next) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()){
-        // Use the Array `map()` method to get a list of error messages.
+        // get a list of error messages.
          const errorMessages = errors.array().map(error => error.msg);
-
-        // Return the validation errors to the client.
         res.status(400).json({ errors: errorMessages });
         next();
     }else {
